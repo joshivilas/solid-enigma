@@ -12,6 +12,8 @@ const INVIDIOUS_INSTANCES = [
 
 // Holds the final Blob so the download button can re-use it
 let _gifBlob = null;
+// Tracks the current preview object URL so it can be revoked on reset
+let _previewUrl = null;
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -39,6 +41,11 @@ function resetApp() {
   hideCard('progress-card');
   $('convert-btn').disabled = false;
   _gifBlob = null;
+  if (_previewUrl) {
+    URL.revokeObjectURL(_previewUrl);
+    _previewUrl = null;
+  }
+  $('gif-img').src = '';
 }
 
 // ── YouTube URL → video ID ───────────────────────────────────────────
@@ -219,8 +226,10 @@ async function convertToGif() {
     setProgress(100, 'Done!');
 
     /* 8 ── Show preview */
-    const objectUrl = URL.createObjectURL(_gifBlob);
-    $('gif-img').src = objectUrl;
+    // Revoke any previous preview URL before creating a new one
+    if (_previewUrl) URL.revokeObjectURL(_previewUrl);
+    _previewUrl = URL.createObjectURL(_gifBlob);
+    $('gif-img').src = _previewUrl;
 
     setTimeout(() => {
       hideCard('progress-card');
@@ -239,8 +248,11 @@ async function convertToGif() {
 function downloadGif() {
   if (!_gifBlob) return;
   const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(_gifBlob);
+  const dlUrl = URL.createObjectURL(_gifBlob);
+  a.href     = dlUrl;
   const name = ($('yt-url').value.match(/[?&]v=([a-zA-Z0-9_-]{11})/) || ['', 'youtube'])[1];
   a.download = `yt-gif-${name}.gif`;
   a.click();
+  // Revoke after the browser has had time to initiate the download
+  setTimeout(() => URL.revokeObjectURL(dlUrl), 10000);
 }
