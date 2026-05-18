@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube → GIF Converter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-bg"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="hero">
+      <div class="hero-icon">🎬</div>
+      <h1>YouTube → GIF</h1>
+      <p class="subtitle">Paste a YouTube link, pick a clip, get an animated GIF.</p>
+    </header>
+
+    <!-- Input card -->
+    <section class="card" id="input-card">
+      <div class="field">
+        <label for="yt-url">YouTube Video URL</label>
+        <input
+          id="yt-url"
+          type="url"
+          placeholder="https://www.youtube.com/watch?v=…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="start-time">Start (seconds)</label>
+          <input id="start-time" type="number" value="0" min="0" step="0.5" />
+        </div>
+        <div class="field">
+          <label for="duration">Duration (seconds)</label>
+          <input id="duration" type="number" value="3" min="1" max="10" step="0.5" />
+        </div>
+        <div class="field">
+          <label for="fps">FPS</label>
+          <input id="fps" type="number" value="10" min="5" max="20" />
+        </div>
+        <div class="field">
+          <label for="gif-width">Width (px)</label>
+          <input id="gif-width" type="number" value="480" min="120" max="720" step="10" />
+        </div>
+      </div>
+
+      <button id="convert-btn" class="btn btn-primary" onclick="convertToGif()">
+        <span class="btn-icon">✨</span> Convert to GIF
+      </button>
+    </section>
+
+    <!-- Progress card -->
+    <section class="card hidden" id="progress-card">
+      <div class="progress-label" id="progress-label">Starting…</div>
+      <div class="progress-track">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-pct" id="progress-pct">0%</div>
+    </section>
+
+    <!-- Preview card -->
+    <section class="card hidden" id="preview-card">
+      <h2 class="card-title">Your GIF is ready 🎉</h2>
+      <div class="gif-wrap">
+        <img id="gif-img" alt="Generated GIF" />
+      </div>
+      <div class="action-row">
+        <button class="btn btn-secondary" onclick="resetApp()">← Make another</button>
+        <button class="btn btn-primary" id="download-btn" onclick="downloadGif()">
+          ⬇ Download GIF
+        </button>
+      </div>
+    </section>
+
+    <!-- Error card -->
+    <section class="card hidden error-card" id="error-card">
+      <div class="error-icon">⚠️</div>
+      <p id="error-msg"></p>
+      <button class="btn btn-secondary" onclick="resetApp()">Try again</button>
+    </section>
+  </main>
+
+  <!-- Hidden video + canvas used for frame capture -->
+  <video id="hidden-video" crossorigin="anonymous" muted playsinline></video>
+  <canvas id="frame-canvas"></canvas>
+
+  <!-- gif.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
